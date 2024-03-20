@@ -9,15 +9,6 @@ public class Main {
     }
 
     public static void mainMenu() throws IOException {
-        System.out.println("Enter \"/start\" to start server");
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String userInput = scanner.nextLine();
-            if (userInput.equals("/start")) {
-                Server.server();
-            } else {
-                System.out.println("Invalid command");
-            }
-        }
+        Server.server();
     }
 }

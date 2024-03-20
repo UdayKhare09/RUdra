@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="RUdra:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/RUdra_jar</output-path>
+    <root id="archive" name="RUdra.jar">
+      <element id="module-output" name="RUdra" />
+    </root>
+  </artifact>
+</component>
