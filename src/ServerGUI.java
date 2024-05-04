@@ -1,41 +1,91 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class ServerGUI extends JFrame {
-    private JLabel lblServerIP, lblServerPort, lblUptime, lblOnlineUsers;
+    private JLabel lblServerIP, lblServerPublicIP, lblUptime, lblOnlineUsers;
     private Timer timer;
+
     public ServerGUI() {
-        setLayout(new GridLayout(4, 2));
         setResizable(false);
+        setTitle("Server");
 
-        add(new JLabel("Server IP: "));
+        Panel mainPanel = new Panel();
+        mainPanel.setLayout(new GridLayout(4, 2));
+
+        mainPanel.add(new JLabel("Server IP: "));
         lblServerIP = new JLabel();
-        add(lblServerIP);
+        mainPanel.add(lblServerIP);
 
-        add(new JLabel("Server Port: "));
-        lblServerPort = new JLabel();
-        add(lblServerPort);
+        mainPanel.add(new JLabel("Server Public IP: "));
+        lblServerPublicIP = new JLabel();
+        mainPanel.add(lblServerPublicIP);
 
-        add(new JLabel("Uptime: "));
+        mainPanel.add(new JLabel("Uptime: "));
         lblUptime = new JLabel();
-        add(lblUptime);
+        mainPanel.add(lblUptime);
 
-        add(new JLabel("Online Users: "));
+        mainPanel.add(new JLabel("Online Users: "));
         lblOnlineUsers = new JLabel();
-        add(lblOnlineUsers);
+        mainPanel.add(lblOnlineUsers);
 
         setSize(400, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
 
         timer = new Timer(1000, e -> updateInfo());
         timer.start();
+
+        // Add this at the end of the ServerGUI constructor
+        JButton manageUsersButton = new JButton("Manage Users");
+        manageUsersButton.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        manageUsersButton.addActionListener(e -> {
+            JDialog manageUsersDialog = new JDialog(this, "Manage Users", true);
+            manageUsersDialog.setLayout(new GridLayout(3, 2));
+
+            JTextField userNameField = new JTextField();
+            JButton addUserButton = new JButton("Add User");
+            addUserButton.addActionListener(ae -> {
+                String userName = userNameField.getText();
+                if (!userName.isEmpty()) {
+                    try {
+                        Server.addUser(userName);
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                }
+            });
+
+            JButton removeUserButton = new JButton("Remove User");
+            removeUserButton.addActionListener(ae -> {
+                String userName = userNameField.getText();
+                if (!userName.isEmpty()) {
+                    try {
+                        Server.removeUser(userName);
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                }
+            });
+
+            manageUsersDialog.add(new JLabel("Username: "));
+            manageUsersDialog.add(userNameField);
+            manageUsersDialog.add(addUserButton);
+            manageUsersDialog.add(removeUserButton);
+            manageUsersDialog.setResizable(false);
+            manageUsersDialog.pack();
+            manageUsersDialog.setLocationRelativeTo(this);
+            manageUsersDialog.setVisible(true);
+        });
+        add(mainPanel, BorderLayout.CENTER);
+        add(manageUsersButton, BorderLayout.SOUTH);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     public void updateInfo() {
         SwingUtilities.invokeLater(() -> {
             lblServerIP.setText(Server.getServerIP());
-            lblServerPort.setText(String.valueOf(Server.getServerPort()));
+            lblServerPublicIP.setText(Server.getPublicIP());
             lblUptime.setText(Server.getUptime());
             lblOnlineUsers.setText(Server.getOnlineUsers());
         });
